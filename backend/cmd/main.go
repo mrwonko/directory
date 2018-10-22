@@ -33,8 +33,11 @@ const index = `<html>
 func main() {
 	start := time.Now()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(rw http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/index.html", func(rw http.ResponseWriter, req *http.Request) {
 		http.ServeContent(rw, req, "/index.html", start, strings.NewReader(index))
+	})
+	mux.HandleFunc("/signin", func(rw http.ResponseWriter, req *http.Request) {
+		http.Error(rw, "TODO", http.StatusNotImplemented)
 	})
 	mux.HandleFunc("/users.json", func(rw http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodGet {
