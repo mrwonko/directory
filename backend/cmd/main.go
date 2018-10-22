@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"html/template"
 	"log"
 	"net/http"
-	"strings"
+	"os"
 	"time"
 )
 
@@ -20,21 +22,34 @@ const mockJSON = `{
 	]
 }`
 
-const index = `<html>
+type templateConfig struct {
+	ClientID string
+}
+
+var indexTemplate = template.Must(template.New("index").Parse(`<html>
 	<head>
 		<title>Directory - Sign In</title>
 	</head>
 	<body>
-		<a href="https://slack.com/oauth/authorize?scope=identity.basic&client_id=3419777384.461042975377"><img alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" /></a>
+		<a href="https://slack.com/oauth/authorize?scope=identity.basic&client_id={{ .ClientID }}"><img alt="Sign in with Slack" height="40" width="172" src="https://platform.slack-edge.com/img/sign_in_with_slack.png" srcset="https://platform.slack-edge.com/img/sign_in_with_slack.png 1x, https://platform.slack-edge.com/img/sign_in_with_slack@2x.png 2x" /></a>
 	</body>
 </html>
-`
+`))
 
 func main() {
 	start := time.Now()
+
+	cfg := templateConfig{
+		ClientID: os.Getenv("CLIENT_ID"),
+	}
+	var index bytes.Buffer
+	if err := indexTemplate.Execute(&index, cfg); err != nil {
+		log.Fatalf("failed to execute index template: %s", err)
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/index.html", func(rw http.ResponseWriter, req *http.Request) {
-		http.ServeContent(rw, req, "/index.html", start, strings.NewReader(index))
+		http.ServeContent(rw, req, "/index.html", start, bytes.NewReader(index.Bytes()))
 	})
 	mux.HandleFunc("/signin", func(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "TODO", http.StatusNotImplemented)
