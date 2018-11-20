@@ -6,7 +6,7 @@ class App extends Component {
     super(props);
     this.state = {
       items: [],
-      showInstallMessage: true
+      showInstallMessage: false
     };
   }
 
@@ -14,20 +14,20 @@ class App extends Component {
     this.setState({showInstallMessage: false});
   }
 
-  componentDidMount() {
-/*
+  componentWillMount() {
+
     const isIos = () => {
       const userAgent = window.navigator.userAgent.toLowerCase();
       return /iphone|ipad|ipod/.test(userAgent);
     };
     // Detects if device is in standalone mode
-    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+    const isInStandaloneMode = () => window.matchMedia('(display-mode: standalone)').matches;
 
     // Checks if should display install popup notification:
     if (isIos() && !isInStandaloneMode()) {
       this.setState({showInstallMessage: true});
     }
-*/
+
     fetch('http://jsonplaceholder.typicode.com/photos')
       .then(result => result.json())
       .then(items => this.setState({items}));
@@ -37,7 +37,7 @@ class App extends Component {
     return (<div className="polaroids">
       <ul className="polaroid design">
           {this.state.items.slice(0, 10).map(item =>
-            <li>
+            <li key={item.url}>
               <a href={item.url} title={item.title}>
                 <img src={item.url} width="250" height="250" alt={item.title} />
                 <span>{item.title}</span>
