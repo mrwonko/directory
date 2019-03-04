@@ -9,23 +9,6 @@ body {
   font-family: "Helvetica Neue", helvetica, sans-serif;
 }
 
-.install-message {
-  position: fixed;
-  padding: 10px 20px;
-  bottom: 0;
-  left: 0;
-  width: calc(100% - 40px);
-  text-align: center;
-  background-color: #ffffff;
-  box-shadow: 0 0 28px 0 rgba(0,0,0,0.55);
-  .shareIcon {
-    width: 16px;
-    height: 16px;
-    vertical-align: text-top;
-    padding: 0 0.2em;
-    fill: #007AF2;
-  }
-}
 .navigation-container {
   text-align: center;
 }
@@ -103,7 +86,7 @@ ul.polaroid {
   }
 }
 
-.polaroid {
+ul.polaroid {
   li {
     &:nth-child(2n+1) {
       transform: rotate(-2deg);
@@ -119,6 +102,13 @@ ul.polaroid {
     }
     &:nth-child(11n+7) {
       transform: rotate(4deg);
+    }
+    img {
+      width: 250px;
+    }
+
+    @media (max-width: 768px) {
+      max-width: 45%;
     }
   }
 }
@@ -137,12 +127,19 @@ ul.polaroid {
       }
     }
   }
-  .polaroid {
+  ul.polaroid {
     li {
       transform: rotate(0);
       &:hover {
         transform: none;
         transition: none;
+      }
+      @media (max-width: 768px) {
+        width: 95%;
+        max-width: 95%;
+        img {
+          width: 88%;
+        }
       }
     }
   }

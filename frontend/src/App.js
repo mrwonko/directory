@@ -1,5 +1,10 @@
 import React, {Component} from 'react';
-
+//import { GoogleLogin, GoogleLogout } from 'react-google-login';
+/*
+const responseGoogle = (response) => {
+  console.log(response);
+};
+*/
 class App extends Component {
 
   constructor(props) {
@@ -9,11 +14,11 @@ class App extends Component {
       error: null,
       users: [],
       gameUsers: [],
-      userClassName: ["","",""],
+      userClassName: ["", "", ""],
       correctUser: null,
       choosenUser: -1,
       showInstallMessage: false,
-      view: "wall"
+      view: "game"
     };
   }
 
@@ -36,7 +41,7 @@ class App extends Component {
 
   onGetUser() {
     this.setState({choosenUser: -1});
-    this.setState({userClassName: ["","",""]});
+    this.setState({userClassName: ["", "", ""]});
     let users = this.state.users;
     this.shuffle(users);
     let gameUsers = [users[0], users[1], users[2]];
@@ -46,22 +51,23 @@ class App extends Component {
   }
 
   checkResult(choosenUser) {
-    this.setState({userClassName: [
+    this.setState({
+      userClassName: [
         this.getClassName(0, choosenUser),
         this.getClassName(1, choosenUser),
         this.getClassName(2, choosenUser)
-      ]});
-    if (this.state.correctUser===choosenUser) {
-      //todo: delay this
-      //this.onGetUser();
+      ]
+    });
+    if (this.state.correctUser === choosenUser) {
+      setTimeout(() => this.onGetUser(), 1000);
     }
   }
 
   getClassName(userId, choosenUser) {
-    if (this.state.correctUser===choosenUser && userId===choosenUser) {
+    if (this.state.correctUser === choosenUser && userId === choosenUser) {
       return "correct";
     }
-    else if (this.state.correctUser!==choosenUser && userId===choosenUser) {
+    else if (this.state.correctUser !== choosenUser && userId === choosenUser) {
       return "error";
     }
     return "";
@@ -102,8 +108,38 @@ class App extends Component {
       return cUp(item.name.first) + ' ' + cUp(item.name.last)
     }
 
+    /*
+    function getImagesFromWilli(googleResponse) {
+      console.log(googleResponse);
+      fetch('https://mywebsite.com/endpoint/', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstParam: 'yourValue',
+          secondParam: 'yourOtherValue',
+        })
+      })
+    }
+    */
+
     return (
       <div>
+        {/*
+        <GoogleLogin
+          clientId="35855596459-voq0hvhoer6gh58kqpicbo5gp51a3tq6.apps.googleusercontent.com"
+          buttonText="Login"
+          onSuccess={getImagesFromWilli}
+          onFailure={getImagesFromWilli}
+        />
+        <GoogleLogout
+          buttonText="Logout"
+        >
+        </GoogleLogout>
+        */}
+
         {!this.state.isLoading && <div className="navigation-container">
           <ul className={"navigation"}>
             <li className={this.state.view === "wall" ? "active" : ""} onClick={() => this.onChangeView("wall")}>
@@ -121,18 +157,22 @@ class App extends Component {
         <div className="message"><span>Loading...</span></div>
         }
 
-        {!this.state.isLoading && this.state.gameUsers.length>0 &&
+        {!this.state.isLoading && this.state.gameUsers.length > 0 &&
         <div className="game" style={{display: this.state.view === "game" ? "block" : "none"}}>
           <div className="polaroids">
             <ul className="polaroid design">
-                <li key="gameuser">
-                  <img onClick={() => this.onGetUser()} src={this.state.gameUsers[this.state.correctUser].picture.large} width="250" height="250" alt=""/>
-                  <div className={"content"}>
-                    <div onClick={()=>this.checkResult(0)} className={this.state.userClassName[0]}> {getName(this.state.gameUsers[0])}</div>
-                    <div onClick={()=>this.checkResult(1)} className={this.state.userClassName[1]}> {getName(this.state.gameUsers[1])}</div>
-                    <div onClick={()=>this.checkResult(2)} className={this.state.userClassName[2]}> {getName(this.state.gameUsers[2])}</div>
-                  </div>
-                </li>
+              <li key="gameuser">
+                <img onClick={() => this.onGetUser()} src={this.state.gameUsers[this.state.correctUser].picture.large}
+                     alt=""/>
+                <div className={"content"}>
+                  <div onClick={() => this.checkResult(0)}
+                       className={this.state.userClassName[0]}> {getName(this.state.gameUsers[0])}</div>
+                  <div onClick={() => this.checkResult(1)}
+                       className={this.state.userClassName[1]}> {getName(this.state.gameUsers[1])}</div>
+                  <div onClick={() => this.checkResult(2)}
+                       className={this.state.userClassName[2]}> {getName(this.state.gameUsers[2])}</div>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
@@ -144,7 +184,7 @@ class App extends Component {
             <ul className="polaroid design">
               {this.state.users.map(user =>
                 <li key={user.login.uuid}>
-                  <img src={user.picture.large} width="250" height="250" alt=""/>
+                  <img src={user.picture.large} alt=""/>
                   <div className={"content"}>{getName(user)}</div>
                 </li>
               )}
@@ -152,17 +192,6 @@ class App extends Component {
           </div>
         </div>
         }
-
-        {this.state.showInstallMessage &&
-        <div className={"install-message"} onClick={() => this.onClickInstallMessage()}>
-          To install this WebApp on your phone, tap
-          <svg className="shareIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
-            <path
-              d="M381.9 181l95.8-95.8v525.9c0 13.4 8.9 22.3 22.3 22.3s22.3-8.9 22.3-22.3V85.2l95.8 95.8c4.5 4.5 8.9 6.7 15.6 6.7 6.7 0 11.1-2.2 15.6-6.7 8.9-8.9 8.9-22.3 0-31.2L515.6 16.1c-2.2-2.2-4.5-4.5-6.7-4.5-4.5-2.2-11.1-2.2-17.8 0-2.2 2.2-4.5 2.2-6.7 4.5L350.7 149.8c-8.9 8.9-8.9 22.3 0 31.2 8.9 9 22.3 9 31.2 0zM812 276.9H633.7v44.6H812v624H188v-624h178.3v-44.6H188c-24.5 0-44.6 20.1-44.6 44.6v624c0 24.5 20.1 44.6 44.6 44.6h624c24.5 0 44.6-20.1 44.6-44.6v-624c0-24.6-20.1-44.6-44.6-44.6z"/>
-          </svg>
-          below and select &ldquo;Add to homescreen&rdquo;.
-        </div>}
-
       </div>
     );
   }
